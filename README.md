@@ -1,47 +1,42 @@
-# MPP Bench (Submission Version)
+# Doc-PP: Document Policy Preservation Benchmark
 
-> **Note:** This submission version contains only a subset of the full dataset due to file size constraints. The complete benchmark will be released separately.
+<p align="center">
+  <img src="assets/fig_doc-pp_intro.png" width="800"/>
+</p>
 
-This folder is a self-contained copy of the pieces from `mpp_bench` that are
-required to reproduce the evaluation and mitigation pipeline that was used for
-our MPP Bench submission.  It bundles the cleaned data, prompts, Python source,
-and helper scripts so that a `git clone` followed by dependency installation is
-all that is needed to rerun the experiments locally.
+## TL;DR
+
+We introduce **Doc-PP**, a benchmark for evaluating whether Large Vision-Language Models (LVLMs) can adhere to user-defined non-disclosure policies when answering questions about multimodal documents. Our evaluation reveals a *Reasoning-Induced Safety Gap*: models frequently leak sensitive information when complex reasoning or cross-modal synthesis is required. To address this, we propose **DVA (Decompose–Verify–Aggregation)**, a structural inference framework that decouples reasoning from policy verification and significantly outperforms standard prompting defenses.
 
 ## Repository Layout
 
-- `data.zip`, `data.z01` ~ `data.z06` – split compressed archives containing the final benchmark JSON plus the supporting PDFs in `docs_clip/`. See [Data Setup](#data-setup) for extraction instructions.
+- `data.zip`, `data.z01` ~ `data.z06` – split compressed archives containing the benchmark JSON and PDFs. See [Data Setup](#data-setup).
 - `prompts/` – system/user prompt templates referenced by the Python code.
 - `src/` – async OpenRouter evaluation, judging, and mitigation drivers.
-- `scripts/` – bash wrappers for the submission pipeline (no Slurm or secrets).
-- `results/`, `judge_results/`, `metrics/`, `logs/` – empty folders that scripts
-  will populate as you run evaluations.
+- `scripts/` – bash wrappers for the submission pipeline.
 
 ## Data Setup
 
-The data is split into multiple compressed archives (`data.zip`, `data.z01` ~ `data.z06`) due to GitHub file size limits. Extract them before running the pipeline:
+The data is split into multiple compressed archives due to GitHub file size limits. Extract them before running:
 
 ```bash
 zip -s 0 data.zip --out data_combined.zip
 unzip data_combined.zip
-rm data_combined.zip  # optional: remove the combined zip after extraction
+rm data_combined.zip  # optional
 ```
 
-This will create the `data/` directory with the following structure:
+This creates the `data/` directory:
 ```
 data/
 ├── 02_final_faithfulness_checklists.json   # benchmark JSON
-└── docs_clip/                               # PDF documents used in evaluation
-    ├── *.pdf
-    └── ...
+└── docs_clip/                               # PDF documents
+    └── *.pdf
 ```
-
-The evaluation scripts expect PDFs to be located at `data/docs_clip/`.
 
 ## Environment Setup
 
 1. Use Python 3.10+.
-2. Create a virtual environment (optional but recommended) and install deps:
+2. Create a virtual environment and install dependencies:
 
    ```bash
    python -m venv .venv
@@ -49,61 +44,36 @@ The evaluation scripts expect PDFs to be located at `data/docs_clip/`.
    pip install -r requirements.txt
    ```
 
-3. Export your OpenRouter credentials (no keys are stored in this repo):
+3. Export your OpenRouter credentials:
 
    ```bash
    export OPENROUTER_API_KEY="sk-or-your-key"
-   # Optional override, defaults to https://openrouter.ai/api/v1
-   export OPENROUTER_BASE_URL="https://openrouter.ai/api/v1"
    ```
-
-You can also set `PYTHON_BIN` if you want the bash helpers to call something
-other than `python` (e.g., `PYTHON_BIN=python3`).
 
 ## Running the Pipeline
 
-All scripts auto-detect the repo root, so you can run them from anywhere:
-
-1. **Model evaluation** – generate model responses for each query split:
-
+1. **Model evaluation** – generate model responses:
    ```bash
    bash scripts/02_evaluate_model.sh
    ```
 
-   The configuration array inside the script defines which combinations of
-   query type, models, and document modes are executed.  Edit the array to add
-   or remove runs without touching the Python code.
-
-2. **LLM-as-a-judge scoring** – score one or more evaluation files:
-
+2. **LLM-as-a-judge scoring** – score evaluation files:
    ```bash
    bash scripts/03_judge_evaluation.sh
    ```
 
-   The script reads the evaluation JSON files under `results/` and produces
-   judged outputs under `judge_results/` plus aggregated metrics in `metrics/`.
-
-3. **Mitigation strategies** – each script chains provider + judge stages:
-
+3. **Mitigation strategies** – run DVA and other defenses:
    ```bash
    bash scripts/04_mitigation_cot.sh
    bash scripts/04_mitigation_dva.sh
    bash scripts/04_mitigation_revision.sh
    ```
 
-   Each mitigation script writes intermediate generation JSON to `results/` and
-   final judge outputs to `judge_results/`.  Modify their configuration arrays
-   to customize models, doc-modes, or batch sizes.
-
-All Python entry points fail fast if `OPENROUTER_API_KEY` is missing or if the
-expected PDFs/JSON files are not present, which keeps accidental misconfigurations
-obvious.
-
 ## Acknowledgments
 
-The documents used in this benchmark are based on the following datasets:
+The documents used in this benchmark are based on:
 
 - [MMLongBench-Doc](https://proceedings.neurips.cc/paper_files/paper/2024/hash/ae0e43289bffea0c1fa34633fc608e92-Abstract-Datasets_and_Benchmarks_Track.html)
 - [SustainableQA](https://arxiv.org/abs/2508.03000)
 
-We sincerely thank the authors of these works for making their datasets available.
+We sincerely thank the authors for making their datasets available.
