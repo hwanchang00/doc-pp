@@ -99,11 +99,11 @@ All Python entry points fail fast if `OPENROUTER_API_KEY` is missing or if the
 expected PDFs/JSON files are not present, which keeps accidental misconfigurations
 obvious.
 
-## Notes
+## Acknowledgments
 
-- No OpenRouter keys or personal SLURM settings are stored in this folder.  The
-  bash helpers simply expect you to export your own secrets.
-- The copied `data/` directory contains the final benchmark instances along with
-  the PDF clips they reference, so nothing external is required to re-run.
-- If you only need a subset of the workflow, you can call the Python modules
-  directly (e.g., `python src/02_evaluate_model.py --help`).
+The documents used in this benchmark are based on the following datasets:
+
+- [MMLongBench-Doc](https://proceedings.neurips.cc/paper_files/paper/2024/hash/ae0e43289bffea0c1fa34633fc608e92-Abstract-Datasets_and_Benchmarks_Track.html)
+- [SustainableQA](https://arxiv.org/abs/2508.03000)
+
+We sincerely thank the authors of these works for making their datasets available.
