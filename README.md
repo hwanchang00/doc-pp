@@ -1,7 +1,7 @@
 # Doc-PP: Document Policy Preservation Benchmark
 
 <p align="center">
-  <img src="assets/fig_doc-pp_intro.png" width="800"/>
+  <img src="assets/fig_doc-pp_intro.png" width="400"/>
 </p>
 
 <p align="center">
