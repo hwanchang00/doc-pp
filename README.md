@@ -4,7 +4,9 @@
   <img src="assets/fig_doc-pp_intro.png" width="800"/>
 </p>
 
-## TL;DR
+<p align="center">
+  <a href="https://arxiv.org/abs/2601.03926"><img src="https://img.shields.io/badge/arXiv-2601.03926-b31b1b.svg" alt="arXiv"></a>
+</p>
 
 We introduce **Doc-PP**, a benchmark for evaluating whether Large Vision-Language Models (LVLMs) can adhere to user-defined non-disclosure policies when answering questions about multimodal documents. Our evaluation reveals a *Reasoning-Induced Safety Gap*: models frequently leak sensitive information when complex reasoning or cross-modal synthesis is required. To address this, we propose **DVA (Decompose–Verify–Aggregation)**, a structural inference framework that decouples reasoning from policy verification and significantly outperforms standard prompting defenses.
 
